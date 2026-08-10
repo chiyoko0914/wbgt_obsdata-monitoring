@@ -199,13 +199,13 @@ header {visibility: hidden !important;}
 """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
-st.title("🌡️ WBGT実測データ 過去1週間データモニタリング")
+st.title("🌡️ WBGT実測データ モニタリング")
 
 with st.spinner("Googleドライブから最新データを取得中..."):
     df, err_df, logs = load_data_from_drive()
 
 # --- デバッグ情報の表示 (Expander) ---
-with st.expander("🔍 デバッグ情報 (展開してログを確認)"):
+with st.expander("🔍 デバッグ情報"):
     for log in logs:
         st.text(log)
 
