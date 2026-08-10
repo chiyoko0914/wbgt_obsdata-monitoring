@@ -15,13 +15,20 @@ from googleapiclient.http import MediaIoBaseDownload
 # Google DriveのフォルダID 
 FOLDER_ID = '1-S6ZZdfM0_7H7y_5DlDg0yMtYgUJ_fYj' 
 DEVICES = ["26150486", "26150487", "26150488"]
-# プロキシ設定の明示
-os.environ["http_proxy"] = "http://nw-proxy.fihes.pref.fukuoka.jp:8080"
-os.environ["https_proxy"] = "http://nw-proxy.fihes.pref.fukuoka.jp:8080"
 
-# --- ② credentials.json のパス設定 ---
+# --- プロキシ設定（ローカル環境のみ適用） ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CREDENTIALS_PATH = os.path.join(BASE_DIR, "credentials.json")
+
+# ローカル環境（credentials.json が存在する）場合のみプロキシを設定
+if os.path.exists(CREDENTIALS_PATH):
+    PROXY_URL =  "http://nw-proxy.fihes.pref.fukuoka.jp:8080"
+    os.environ["http_proxy"] = PROXY_URL
+    os.environ["https_proxy"] = PROXY_URL
+else:
+    # クラウド環境ではプロキシ環境変数を消去（直接通信）
+    os.environ.pop("http_proxy", None)
+    os.environ.pop("https_proxy", None)
 
 # --- Google Drive API 接続準備 ---
 #@st.cache_resource
