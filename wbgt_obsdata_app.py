@@ -181,6 +181,24 @@ def load_data_from_drive():
 
 # --- メイン画面描画 ---
 st.set_page_config(page_title="WBGT実測データ リアルタイム監視", layout="wide")
+
+#--add
+# --- 右上のヘッダーメニュー（GitHubアイコン・鉛筆マーク等）やフッターを非表示化 ---
+hide_streamlit_style = """
+<style>
+/* 右上のツールバー・アイコン群を非表示 */
+[data-testid="stToolbar"] {visibility: hidden !important;}
+div[data-testid="stToolbar"] {display: none !important;}
+
+/* 画面右下の「Made with Streamlit」などのフッターを非表示 */
+footer {visibility: hidden !important;}
+
+/* ヘッダー自体の余白調整（必要に応じて） */
+header {visibility: hidden !important;}
+</style>
+"""
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 st.title("🌡️ WBGT実測データ 過去1週間データモニタリング")
 
 with st.spinner("Googleドライブから最新データを取得中..."):
