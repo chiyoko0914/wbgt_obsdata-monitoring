@@ -24,16 +24,39 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CREDENTIALS_PATH = os.path.join(BASE_DIR, "credentials.json")
 
 # --- Google Drive API 接続準備 ---
+#@st.cache_resource
+#def get_drive_service():
+#    if not os.path.exists(CREDENTIALS_PATH):
+#        st.error(f"認証ファイルが見つかりません: {CREDENTIALS_PATH}")
+#        st.stop()
+#
+#    creds = service_account.Credentials.from_service_account_file(
+#        CREDENTIALS_PATH,
+#        scopes=['https://www.googleapis.com/auth/drive.readonly']
+#    )
+#
+#    http_client = httplib2.Http()
+#    authorized_http = google_auth_httplib2.AuthorizedHttp(creds, http=http_client)
+#    return build('drive', 'v3', http=authorized_http)
+# --- Google Drive API 接続準備 ---
 @st.cache_resource
 def get_drive_service():
-    if not os.path.exists(CREDENTIALS_PATH):
-        st.error(f"認証ファイルが見つかりません: {CREDENTIALS_PATH}")
+    # 1. ローカル環境（credentials.json が存在する場合）
+    if os.path.exists(CREDENTIALS_PATH):
+        creds = service_account.Credentials.from_service_account_file(
+            CREDENTIALS_PATH,
+            scopes=['https://www.googleapis.com/auth/drive.readonly']
+        )
+    # 2. クラウド環境（st.secrets に認証情報が設定されている場合）
+    elif "gcp_service_account" in st.secrets:
+        creds_dict = dict(st.secrets["gcp_service_account"])
+        creds = service_account.Credentials.from_service_account_info(
+            creds_dict,
+            scopes=['https://www.googleapis.com/auth/drive.readonly']
+        )
+    else:
+        st.error("認証情報 (credentials.json または st.secrets) が見つかりません。")
         st.stop()
-
-    creds = service_account.Credentials.from_service_account_file(
-        CREDENTIALS_PATH,
-        scopes=['https://www.googleapis.com/auth/drive.readonly']
-    )
 
     http_client = httplib2.Http()
     authorized_http = google_auth_httplib2.AuthorizedHttp(creds, http=http_client)
