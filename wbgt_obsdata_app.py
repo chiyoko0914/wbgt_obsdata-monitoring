@@ -82,7 +82,8 @@ def load_data_from_drive():
     debug_logs.append(f"📁 フォルダ内で検出された総ファイル数: {len(files)} 件")
 
     now = datetime.datetime.now()
-    one_week_ago = now - datetime.timedelta(days=7)
+    #-mod-#one_week_ago = now - datetime.timedelta(days=7)
+    one_week_ago = now - datetime.timedelta(days=14)
     debug_logs.append(f"🕒 現在日時 (now): {now.strftime('%Y-%m-%d %H:%M:%S')}")
     debug_logs.append(f"📅 抽出対象期間の基準 (one_week_ago): {one_week_ago.strftime('%Y-%m-%d %H:%M:%S')}")
 
@@ -114,7 +115,8 @@ def load_data_from_drive():
 
             # ファイル日付の判定（1週間前より古ければ中断）
             if file_info['date'] < (one_week_ago - datetime.timedelta(days=1)):
-                debug_logs.append(f"    └ 判定日付が 1週間前より古いためスキップ (以降の過去ファイルもスキップ)")
+                #-mod-#debug_logs.append(f"    └ 判定日付が 1週間前より古いためスキップ (以降の過去ファイルもスキップ)")
+                debug_logs.append(f"    └ 判定日付が 2週間前より古いためスキップ (以降の過去ファイルもスキップ)")
                 break
 
             request = service.files().get_media(fileId=file_info['id'])
@@ -167,8 +169,16 @@ def load_data_from_drive():
     combined_df = pd.concat(all_dfs, ignore_index=True)
     debug_logs.append(f"📊 結合後総データ数 (フィルタ前): {len(combined_df)} 行")
 
-    # 過去1週間（one_week_ago 以降）のデータに絞り込み
-    filtered_df = combined_df[combined_df['DATE'] >= one_week_ago]
+    #-mod-## 過去1週間（one_week_ago 以降）のデータに絞り込み
+    #-mod-#filtered_df = combined_df[combined_df['DATE'] >= one_week_ago]
+    #-mod-#debug_logs.append(f"📊 過去1週間フィルタ後データ数 ({one_week_ago} 以降): {len(filtered_df)} 行")
+
+    # 結合済みのデータフレーム (df) に対して、現在時刻から正確に過去1週間分のデータを抽出
+    now = datetime.datetime.now()
+    data_threshold_time = now - datetime.timedelta(days=7)
+
+    # 日時列が datetime 型であることを前提としてフィルタリング
+    filtered_df = combined_df[combined_df['DATE'] >= data_threshold_time]
     debug_logs.append(f"📊 過去1週間フィルタ後データ数 ({one_week_ago} 以降): {len(filtered_df)} 行")
 
     filtered_df = filtered_df.sort_values('DATE')
