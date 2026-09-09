@@ -1,4 +1,28 @@
 import os
+import sys
+
+# =========================================================
+# 【最優先】プロキシ設定の環境依存処理
+# ※他のサードパーティ製ライブラリを import する前に実行します
+# =========================================================
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CREDENTIALS_PATH = os.path.join(BASE_DIR, "credentials.json")
+
+# ローカル環境（credentials.json が存在する）場合のみプロキシを設定
+if os.path.exists(CREDENTIALS_PATH):
+    PROXY_URL = "http://nw-proxy.fihes.local:8080"
+    os.environ["http_proxy"] = PROXY_URL
+    os.environ["https_proxy"] = PROXY_URL
+    os.environ["HTTP_PROXY"] = PROXY_URL
+    os.environ["HTTPS_PROXY"] = PROXY_URL
+else:
+    # Streamlit Cloud（credentials.json が存在しない）では環境変数を完全に削除
+    for key in ["http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "all_proxy"]:
+        os.environ.pop(key, None)
+
+# =========================================================
+# 以下、通常のライブラリの import 処理
+# =========================================================
 import io
 import datetime
 import re
@@ -22,8 +46,8 @@ CREDENTIALS_PATH = os.path.join(BASE_DIR, "credentials.json")
 
 # ローカル環境（credentials.json が存在する）場合のみプロキシを設定
 if os.path.exists(CREDENTIALS_PATH):
-    #PROXY_URL =  "http://nw-proxy.fihes.pref.fukuoka.jp:8080"
-    PROXY_URL =  "http://nw-proxy.fihes.local:8080"
+    #PROXY_URL ="http://nw-proxy.fihes.pref.fukuoka.jp:8080"
+    PROXY_URL = "http://nw-proxy.fihes.local:8080"
     os.environ["http_proxy"] = PROXY_URL
     os.environ["https_proxy"] = PROXY_URL
 else:
