@@ -22,7 +22,8 @@ CREDENTIALS_PATH = os.path.join(BASE_DIR, "credentials.json")
 
 # ローカル環境（credentials.json が存在する）場合のみプロキシを設定
 if os.path.exists(CREDENTIALS_PATH):
-    PROXY_URL =  "http://nw-proxy.fihes.pref.fukuoka.jp:8080"
+    #PROXY_URL =  "http://nw-proxy.fihes.pref.fukuoka.jp:8080"
+    PROXY_URL =  "http://nw-proxy.fihes.local:8080"
     os.environ["http_proxy"] = PROXY_URL
     os.environ["https_proxy"] = PROXY_URL
 else:
